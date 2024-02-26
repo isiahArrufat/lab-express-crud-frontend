@@ -12,8 +12,11 @@ const Logs = ({ logs, setAllLogs }) => {
 
         return (
             <div>
-                <h1>Logs</h1>
-                {logs.map(({ id, captainName, title, post, mistakesWereMandToday, daysSinceLastCrisis }) => 
+              <h1>Logs</h1>
+              { !logs || logs.length === 0 ? (
+                  <div>Loading...</div>
+                ) : (
+                  logs.map(({ id, captainName, title, post, mistakesWereMandToday, daysSinceLastCrisis }) => (
                     <div key={id}>
                       <h3>Captain Name: {captainName}</h3>
                       <h3>Title: {title}</h3>
@@ -22,10 +25,11 @@ const Logs = ({ logs, setAllLogs }) => {
                       <h3>Days Since Last Crisis: {daysSinceLastCrisis}</h3>
                       <hr />
                     </div>
-                )}
+                  ))
+                )
+              }
             </div>
-        )
-
-    }
+          );
+}          
 
 export default Logs
