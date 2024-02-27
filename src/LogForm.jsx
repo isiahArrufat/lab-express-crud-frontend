@@ -1,7 +1,14 @@
 import { useState } from "react"
 
-const LogForm = ({ createLog, setCreateLog, setAllLogs }) => {
+const LogForm = ({  setAllLogs }) => {
 
+    const [createLog, setCreateLog] = useState({
+        captainName: "",
+        title: "",
+        post: "",
+        mistakesWereMadeToday: false,
+        daysSinceLastCrisis:0
+      })
 
     const handleChange = (e) => {
         setCreateLog({ ...createLog, [e.target.id]: e.target.value });

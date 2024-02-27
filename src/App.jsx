@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logs from "./Logs";
 import Log from "./Log";
 import LogForm from "./LogForm";
@@ -8,13 +8,12 @@ import LogForm from "./LogForm";
 const App = () => {
   const [allLogs, setAllLogs] = useState([])
   const [singleLog, setSingleLog] = useState({})
-  const [createLog, setCreateLog] = useState({
-    captainName: "",
-    title: "",
-    post: "",
-    mistakesWereMadeToday: false,
-    daysSinceLastCrisis:0
-  })
+ 
+  useEffect(() => {
+    fetch("http://localhost:3003/api/logs")
+    .then((res) => res.json())
+    .then((data) => setAllLogs(data.logs))
+}, [])
   
 
   return (
@@ -29,8 +28,7 @@ const App = () => {
       setSingleLog={setSingleLog}
      />
      <LogForm 
-      createLog={createLog}
-      setCreateLog={setCreateLog}
+      logs={allLogs}
       setAllLogs={setAllLogs}
      />
     </div>
