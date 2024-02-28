@@ -1,38 +1,57 @@
-import { useState } from "react"
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-const LogForm = ({  setAllLogs }) => {
+const LogForm = ({ setAllLogs }) => {
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-    const [createLog, setCreateLog] = useState({
-        captainName: "",
-        title: "",
-        post: "",
-        mistakesWereMadeToday: false,
-        daysSinceLastCrisis:0
-      })
+  const [createLog, setCreateLog] = useState({
+    captainName:"",
+    title: "",
+    post: "",
+    mistakesWereMadeToday:false ,
+    daysSinceLastCrisis: 0,
+  });
 
-    const handleChange = (e) => {
-        setCreateLog({ ...createLog, [e.target.id]: e.target.value });
-    };
+  const handleChange = (e) => {
+    setCreateLog({ ...createLog, [e.target.id]: e.target.value });
+  };
+
+  const handleCancel = () => {
+    navigate("/")
+  }
     
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const createdLog = {
-            captainName: createLog.captainName,
-            title: createLog.title,
-            post: createLog.post,
-            mistakesWereMadeToday: createLog.mistakesWereMadeToday,
-            daysSinceLastCrisis: createLog.daysSinceLastCrisis
-        };
-        setAllLogs((prevLogs) => [...prevLogs, createdLog]);
-        
-        setCreateLog({
-            captainName: "",
-            title: "",
-            post: "",
-            mistakesWereMadeToday: false,
-            daysSinceLastCrisis: 0
-        });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(createLog),
     };
+
+    fetch("http://localhost:3003/api/logs", options)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.message) {
+          alert("All inputs must be filled!!!!");
+        } else {
+          setAllLogs(data.logs); 
+          navigate("/");
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
+ 
+  useEffect(() => {
+    if (id) {
+      fetch(`http://localhost:3003/api/logs/${id}`)
+        .then((res) => res.json())
+        .then((data) => setCreateLog(data)); 
+    }
+  }, [id]);
+    
 
     return (
         <div>
@@ -66,24 +85,26 @@ const LogForm = ({  setAllLogs }) => {
                     />
                 </label>
                 <label htmlFor="mistakes">
-                Mistakes Were Made Today?? :
+                    Mistakes Were Made Today?? :
                     <input 
                         onChange={handleChange}
                         type="text"
                         id="mistakesWereMadeToday"
                         value={createLog.mistakesWereMadeToday}
                     />
-                </label><label htmlFor="last-crisis">
-                Days Since Last Crisis?? :
+                </label>
+                <label htmlFor="last-crisis">
+                    Days Since Last Crisis?? :
                     <input 
                         onChange={handleChange}
                         type="text"
                         id="daysSinceLastCrisis"
-                        value={createLog.daysSinceLastCrisis.toString()}
+                        value={createLog.daysSinceLastCrisis != null ? createLog.daysSinceLastCrisis : ''}
                     />
                 </label>
                 <button type="submit" onClick={handleSubmit}>Submit</button>
             </form>
+            <button onClick={handleCancel}>Cancel</button>
         </div>
     )
 }
